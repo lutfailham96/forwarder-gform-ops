@@ -1,0 +1,7 @@
+```
+# port forward via kubectl
+kubectl port-forward svc/FORWARDER_NAME -n PROJECT_NAMESPACE 5453:5433
+
+# akses DB via postgresql client
+psql -h 127.0.0.1 -p 5453 -U USERNAME DATABASE
+```

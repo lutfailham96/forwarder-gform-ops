@@ -1,0 +1,9 @@
+```
+# port forward via kubectl
+kubectl port-forward svc/FORWARDER_NAME -n PROJECT_NAMESPACE 27057:27017 27058:27018 27059:27019
+
+# akses DB via mongosh
+mongosh "mongodb://USERNAME:PASSWORD@localhost:27057/DATABASE?directConnection=true"
+mongosh "mongodb://USERNAME:PASSWORD@localhost:27058/DATABASE?directConnection=true"
+mongosh "mongodb://USERNAME:PASSWORD@localhost:27059/DATABASE?directConnection=true"
+```

@@ -1,0 +1,108 @@
+{{- if eq .Values.STATUS "delete" }}
+
+{{- else }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.NAME }}
+  namespace: {{ .Values.PROJECT }}
+  labels:
+    app: {{ .Values.NAME }}
+spec:
+  replicas: {{ .Values.REPLICATION }}
+  selector:
+    matchLabels:
+      app: {{ .Values.NAME }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.NAME }}
+        date: "{{ now | unixEpoch }}"
+    spec:
+      containers:
+      - name: {{ .Values.NAME }}-01
+        image: {{ .Values.IMAGES }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.PORT1 }}
+        env:
+          - name: SOCAT_FORWARD_IP
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_IP1
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_FORWARD_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_PORT1
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_LISTEN_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_LISTEN_PORT1
+                 name: {{ .Values.SECRET_NAME }}
+        resources:
+          limits:
+            memory: {{ .Values.MEMORY_LIMIT }}
+          requests:
+            memory: {{ .Values.MEMORY_REQUEST }}
+      - name: {{ .Values.NAME }}-02
+        image: {{ .Values.IMAGES }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.PORT2 }}
+        env:
+          - name: SOCAT_FORWARD_IP
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_IP2
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_FORWARD_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_PORT2
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_LISTEN_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_LISTEN_PORT2
+                 name: {{ .Values.SECRET_NAME }}
+        resources:
+          limits:
+            memory: {{ .Values.MEMORY_LIMIT }}
+          requests:
+            memory: {{ .Values.MEMORY_REQUEST }}
+      - name: {{ .Values.NAME }}-03
+        image: {{ .Values.IMAGES }}
+        imagePullPolicy: Always
+        ports:
+          - containerPort: {{ .Values.PORT3 }}
+        env:
+          - name: SOCAT_FORWARD_IP
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_IP3
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_FORWARD_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_FORWARD_PORT3
+                 name: {{ .Values.SECRET_NAME }}
+          - name: SOCAT_LISTEN_PORT
+            valueFrom:
+              secretKeyRef:
+                 key: SOCAT_LISTEN_PORT3
+                 name: {{ .Values.SECRET_NAME }}
+        resources:
+          limits:
+            memory: {{ .Values.MEMORY_LIMIT }}
+          requests:
+            memory: {{ .Values.MEMORY_REQUEST }}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+       - name: {{ .Values.REGISTRY_SECRET_NAME }}
+      nodeSelector:
+         node-role.kubernetes.io/worker: "{{ .Values.NODE }}"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+{{- end }}

@@ -1,0 +1,26 @@
+{{- if eq .Values.STATUS "delete" }}
+
+{{- else }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.NAME }}
+  namespace: {{ .Values.PROJECT }}
+spec:
+  type: ""
+  ports:
+    - port: {{ .Values.PORT1 }}
+      targetPort: {{ .Values.PORT1 }}
+      protocol: TCP
+      name: tcp-{{ .Values.PORT1 }}
+    - port: {{ .Values.PORT2 }}
+      targetPort: {{ .Values.PORT2 }}
+      protocol: TCP
+      name: tcp-{{ .Values.PORT2 }}
+    - port: {{ .Values.PORT3 }}
+      targetPort: {{ .Values.PORT3 }}
+      protocol: TCP
+      name: tcp-{{ .Values.PORT3 }}
+  selector: 
+      app: {{ .Values.NAME }}  
+{{- end }}

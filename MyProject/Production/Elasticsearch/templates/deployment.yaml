@@ -1,0 +1,47 @@
+{{- if eq .Values.STATUS "delete" }}
+
+{{- else }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.NAME }}
+  namespace: {{ .Values.PROJECT }}
+  labels:
+    app: {{ .Values.NAME }}
+spec:
+  replicas: {{ .Values.REPLICATION }}
+  selector:
+    matchLabels:
+      app: {{ .Values.NAME }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.NAME }}
+        date: "{{ now | unixEpoch }}"
+    spec:
+      containers:
+      - name: {{ .Values.NAME }}
+        image: {{ .Values.IMAGES }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.PORTS }}
+{{- if eq .Values.ENV "true" }}
+        envFrom:
+        - secretRef:
+            name: {{ .Values.SECRET_NAME }}
+{{- end }}
+        resources:
+          limits:
+            memory: {{ .Values.MEMORY_LIMIT }}
+            cpu:  {{ .Values.CPU_LIMIT }}
+          requests:
+            memory: {{ .Values.MEMORY_REQUEST }}
+            cpu: {{ .Values.CPU_REQUEST }}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+       - name: {{ .Values.REGISTRY_SECRET_NAME }}
+      nodeSelector:
+         node-role.kubernetes.io/worker: "{{ .Values.NODE }}"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+{{- end }}
